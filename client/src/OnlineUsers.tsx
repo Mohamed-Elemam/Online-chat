@@ -1,57 +1,60 @@
-import { Divider, FeedLabel, Image, Label } from "semantic-ui-react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Image } from "semantic-ui-react";
+import MessagesArea from "./MessagesArea";
 
 const OnlineUsers = () => {
   interface User {
-    name: string;
-    status: "Online" | "Offline";
+    _id: string;
+    username: string;
+    online: boolean;
   }
-  const online: User[] = [
-    { name: "Elijah", status: "Online" },
-    { name: "Mason", status: "Online" },
-    { name: "Ava", status: "Offline" },
-    { name: "Sophia", status: "Offline" },
-    { name: "Isaac", status: "Online" },
-    { name: "Liam", status: "Online" },
-    { name: "Olivia", status: "Offline" },
-    { name: "Emma", status: "Offline" },
-    { name: "Noah", status: "Online" },
-    { name: "Chloe", status: "Offline" },
-    { name: "Caleb", status: "Online" },
-    { name: "Aria", status: "Offline" },
-    { name: "Lucas", status: "Online" },
-    { name: "Zoe", status: "Offline" },
-    { name: "Ethan", status: "Online" },
-    { name: "Mia", status: "Offline" },
-    { name: "Jackson", status: "Online" },
-    { name: "Lily", status: "Offline" },
-    { name: "Aiden", status: "Online" },
-    { name: "Grace", status: "Offline" },
-  ];
+
+  const [apiData, setApiData] = useState<User[]>([]);
+  const [destUser, setDestUser] = useState<User>();
+
+  const userToken = localStorage.getItem("userToken");
+
+  async function getOnlineUsers() {
+    const { data } = await axios.get("http://localhost:3000/user", {
+      headers: {
+        Authorization: `${import.meta.env.VITE_TOKEN_SECRET} ${userToken}`,
+      },
+    });
+    setApiData(data.users);
+  }
+
+  useEffect(() => {
+    getOnlineUsers();
+  }, []);
 
   return (
     <>
       <div className="overflow-y-scroll min-w-[250px] border border-green-400 p-3 rounded-lg h-[60vh] sm:h-[80%]">
         <h3>Online Users</h3>
-        <div className=" ">
-          {online.map((ele, index) => (
+        <div>
+          {apiData?.map((ele) => (
             <div
-              key={index}
-              className="flex py-4 hover:bg-red-50 hover:cursor-pointer "
+              key={ele._id}
+              className="flex py-4 hover:bg-red-50 hover:cursor-pointer border-b border-gray-200"
+              onClick={() => {
+                setDestUser(ele);
+              }}
             >
-              <Label
-                circular
-                color={`${ele.status === "Online" ? "green" : "red"}`}
-                empty
-              />
-              <Image
-                src="https://react.semantic-ui.com/images/avatar/small/elliot.jpg"
-                avatar
-              />
-              <div className="ml-3">{ele.name}</div>
+              <span className="relative inline-block">
+                <Image
+                  src="https://react.semantic-ui.com/images/avatar/small/elliot.jpg"
+                  className="w-[40px] rounded-full"
+                />
+                <span className="absolute right-[-15%] top-[-15%] h-[20px] w-[20px] rounded-full border-[3px] border-solid border-white bg-green-500"></span>
+              </span>
+
+              <div className="ml-3">{ele.username}</div>
             </div>
           ))}
         </div>
       </div>
+      <MessagesArea destUser={destUser} />
     </>
   );
 };

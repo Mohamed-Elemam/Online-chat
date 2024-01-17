@@ -1,5 +1,8 @@
+import { config } from "dotenv";
+config();
 import { UserModel } from "../../../database/models/user.model.js";
-import { io } from "./../../../server.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const register = async (req, res) => {
   try {
@@ -8,19 +11,24 @@ export const register = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ error: "email already exists" });
     }
-
+    const hashedPassword = bcrypt.hashSync(password, 8);
     const newUser = new UserModel({
       username,
       email,
-      password,
+      password: hashedPassword,
       online: true,
     });
 
     await newUser.save();
 
+    const token = jwt.sign(
+      { _id: newUser._id, username, email },
+      process.env.TOKEN_SECRET
+    );
+
     return res
       .status(201)
-      .json({ message: "User registered successfully", user: newUser });
+      .json({ message: "User registered successfully", token, user: newUser });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -32,12 +40,17 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await UserModel.findOne({ email });
+    const unHashedPassword = bcrypt.compareSync(password, user.password);
 
-    if (!user || user.password !== password) {
+    if (!user || !unHashedPassword) {
       return res.status(401).json({ error: "Invalid username or password" });
     }
     user.online = true;
-    res.json({ message: "Login successful", user });
+    const token = jwt.sign(
+      { _id: user._id, username: user.username, email },
+      process.env.TOKEN_SECRET
+    );
+    res.json({ message: "Login successful", token, user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -50,16 +63,31 @@ export const logout = async (req, res) => {
     const { userId } = req.params;
     const user = await UserModel.findByIdAndUpdate(userId, { online: false });
 
-    res.json({ message: "Logout successful", user });
+    res.status(200).json({ message: "Done", user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-//err handle
-// auth
-// hash
+//get online users
+export const onlineUsers = async (req, res, next) => {
+  try {
+    console.log(req.user);
+    const userId = req.user._id;
+    const users = await UserModel.find({
+      _id: { $ne: userId },
+      online: true,
+    });
+    if (!users) {
+      return res.status(404).json({ error: "No users currently online" });
+    }
+    res.status(200).json({ message: "Done", users });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 //*if user exits
 // In your Socket.io server code

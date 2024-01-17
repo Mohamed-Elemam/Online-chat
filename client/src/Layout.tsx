@@ -3,9 +3,9 @@ import { Container } from "semantic-ui-react";
 
 const Layout = () => {
   return (
-    <Container>
-      <Outlet />
-    </Container>
+    // <Container>
+    <Outlet />
+    // </Container>
   );
 };
 

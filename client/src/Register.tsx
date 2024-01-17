@@ -1,11 +1,12 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, Button } from "semantic-ui-react";
 import { z } from "zod";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Register = () => {
+  const navigate = useNavigate();
+
   const inputSchema = z.object({
     username: z.string().min(3, "name must be more than 3 characters").trim(),
     email: z.string().email("enter valid email").trim(),
@@ -32,56 +33,15 @@ export const Register = () => {
         values
       );
       console.log(data);
-      localStorage.setItem("id", data.user._id);
-      localStorage.setItem("name", data.user.username);
-      localStorage.setItem("email", data.user.email);
+      localStorage.setItem("userToken", data.token);
+      navigate("/chat");
     } catch (error) {
       console.error(error);
     }
   };
+
   return (
     <>
-      {/* <div className="flex justify-center items-center flex-col h-100">
-        <h2 className="text-center">Create new account</h2>
-
-        <Form onSubmit={handleSubmit(handleRegister)} className="space-y-5 ">
-          <label>User name:</label>
-          <input
-            placeholder="User name "
-            type="text"
-            {...register("username", { required: true })}
-          />
-          {errors.username && errors.username.message && (
-            <p className="text-red-500">{errors.username.message}</p>
-          )}
-
-          <label>Email:</label>
-          <input
-            placeholder="Email "
-            type="email"
-            {...register("email", { required: true })}
-          />
-          {errors.email && errors.email.message && (
-            <p className="text-red-500">{errors.email.message}</p>
-          )}
-
-          <label>Password:</label>
-          <input
-            placeholder="Password"
-            type="password"
-            {...register("password", { required: true })}
-          />
-          {errors.password && errors.password.message && (
-            <p className="text-red-500">{errors.password.message}</p>
-          )}
-          <Button className="ui button" disabled={isSubmitting} type="submit">
-            Register
-          </Button>
-          <div>
-            <Link to={"/login"}>Already have an account ? Login</Link>
-          </div>
-        </Form>
-      </div> */}
       <div className="bg-white py-6 sm:py-8 lg:py-12">
         <div className="mx-auto max-w-screen-2xl px-4 md:px-8">
           <h2 className="mb-4 text-center text-2xl font-bold text-gray-800 md:mb-8 lg:text-3xl">

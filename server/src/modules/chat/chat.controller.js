@@ -1,13 +1,41 @@
-import { ChatModel } from "./../../../database/models/chat.model";
+import { ChatModel } from "./../../../database/models/chat.model.js";
+import { UserModel } from "./../../../database/models/user.model.js";
+import { io } from "./../../../server.js";
+
 export const sendMessage = async (req, res) => {
-  const { message, sender, receiver } = req.body;
-  //sender ==>from context
-  //
-  try {
-    const newMessage = new ChatModel({ message, sender, receiver });
-    await newMessage.save();
-    res.status(201).json({ status: "Success", message: newMessage });
-  } catch (error) {
-    res.status(400).json({ message: "failed", error });
+  const { message, destId } = req.body;
+  const destUser = await UserModel.findById(destId);
+  if (!destUser) {
+    res.status(404).json({ message: "In-valid user" });
   }
+
+  const chat = await ChatModel.findOne({
+    $or: [
+      { sender: req.user._id, receiver: destId },
+      { sender: destId, receiver: req.user._id },
+    ],
+  }).populate(["sender", "receiver"]);
+
+  if (!chat) {
+    const chat = await ChatModel.create({
+      sender: req.user._id,
+      receiver: destId,
+      message: {
+        from: req.user._id,
+        to: destId,
+        message: message,
+      },
+    });
+    io().to(destUser.socketId).emit("receiveMessage", message);
+    return res.status(201).json({ status: "Done", message: chat });
+  }
+  chat.messages.push({
+    from: req.user._id,
+    to: destId,
+    message: message,
+  });
+  await chat.save();
+  io.to(destUser.socketId).emit("receiveMessage", message);
+
+  return res.status(200).json({ status: "Done", message: chat });
 };
