@@ -1,12 +1,7 @@
 import { Outlet } from "react-router-dom";
-import { Container } from "semantic-ui-react";
 
 const Layout = () => {
-  return (
-    // <Container>
-    <Outlet />
-    // </Container>
-  );
+  return <Outlet />;
 };
 
 export default Layout;

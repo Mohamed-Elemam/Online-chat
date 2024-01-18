@@ -3,16 +3,22 @@ import { useEffect, useState } from "react";
 import { Image } from "semantic-ui-react";
 import MessagesArea from "./MessagesArea";
 
+export interface User {
+  _id: string;
+  username: string;
+  online: boolean;
+}
+export interface Chat {
+  from: string;
+  message: string;
+  to: string;
+  _id: string;
+}
 const OnlineUsers = () => {
-  interface User {
-    _id: string;
-    username: string;
-    online: boolean;
-  }
-
   const [apiData, setApiData] = useState<User[]>([]);
   const [destUser, setDestUser] = useState<User>();
 
+  const [chatMessages, setChatMessages] = useState<Chat[]>([]);
   const userToken = localStorage.getItem("userToken");
 
   async function getOnlineUsers() {
@@ -22,6 +28,27 @@ const OnlineUsers = () => {
       },
     });
     setApiData(data.users);
+  }
+
+  async function getMessages(reciverId: { reciverId: User }) {
+    try {
+      const { data } = await axios.get(
+        `http://localhost:3000/chat/${reciverId}`,
+
+        {
+          headers: {
+            Authorization: `${import.meta.env.VITE_TOKEN_SECRET} ${userToken}`,
+          },
+        }
+      );
+      console.log(data.chat);
+      setChatMessages(data.chat);
+    } catch (error) {
+      console.log(error.response.data.message);
+      if (error.response.data.message === "Chat not found") {
+        setChatMessages([]);
+      }
+    }
   }
 
   useEffect(() => {
@@ -39,6 +66,7 @@ const OnlineUsers = () => {
               className="flex py-4 hover:bg-red-50 hover:cursor-pointer border-b border-gray-200"
               onClick={() => {
                 setDestUser(ele);
+                getMessages(ele._id);
               }}
             >
               <span className="relative inline-block">
@@ -54,7 +82,7 @@ const OnlineUsers = () => {
           ))}
         </div>
       </div>
-      <MessagesArea destUser={destUser} />
+      <MessagesArea destUser={destUser} chatMessages={chatMessages} />
     </>
   );
 };

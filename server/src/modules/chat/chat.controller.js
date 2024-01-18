@@ -3,6 +3,7 @@ import { UserModel } from "./../../../database/models/user.model.js";
 import { io } from "./../../../server.js";
 
 export const sendMessage = async (req, res) => {
+  console.log(req.user);
   const { message, destId } = req.body;
   const destUser = await UserModel.findById(destId);
   if (!destUser) {
@@ -26,7 +27,7 @@ export const sendMessage = async (req, res) => {
         message: message,
       },
     });
-    io().to(destUser.socketId).emit("receiveMessage", message);
+    io.to(destUser.socketId).emit("receiveMessage", message);
     return res.status(201).json({ status: "Done", message: chat });
   }
   chat.messages.push({
@@ -38,4 +39,21 @@ export const sendMessage = async (req, res) => {
   io.to(destUser.socketId).emit("receiveMessage", message);
 
   return res.status(200).json({ status: "Done", message: chat });
+};
+
+export const getMessages = async (req, res) => {
+  const { receiverId } = req.params;
+
+  const chat = await ChatModel.findOne({
+    $or: [
+      { sender: req.user._id, receiver: receiverId },
+      { sender: receiverId, receiver: req.user._id },
+    ],
+  }).populate(["sender", "receiver"]);
+
+  if (!chat) {
+    return res.status(404).json({ message: "Chat not found" });
+  }
+
+  return res.status(200).json({ messages: "done", chat: chat.messages });
 };
