@@ -1,13 +1,14 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, Button } from "semantic-ui-react";
 import { z } from "zod";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 const Login = () => {
   const inputSchema = z.object({
-    username: z.string().min(3, "name must be more than 3 characters").trim(),
     email: z.string().email("enter valid email").trim(),
     password: z.string().min(6, "name must be more than 5 characters").trim(),
   });
@@ -24,6 +25,8 @@ const Login = () => {
     resolver,
   });
 
+  const { setUserState } = useContext(AuthContext);
+  const navigate = useNavigate();
   const handleLogin: SubmitHandler<inputsType> = async (values) => {
     console.log(values);
     try {
@@ -31,49 +34,27 @@ const Login = () => {
         "http://localhost:3000/user/login",
         values
       );
-      console.log(data);
-      localStorage.setItem("userToken", data.token);
+      if (setUserState) {
+        const userData = {
+          username: data.user.username,
+          userId: data.user._id,
+          email: data.user.email,
+          token: data.token,
+        };
+        setUserState(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
+      }
+      navigate("/chat");
     } catch (error) {
       console.error(error);
     }
   };
+
   return (
     <>
-      {/* <div className="flex justify-center items-center flex-col h-100">
-        <h2 className="text-center">Login in your account</h2>
-
-        <Form onSubmit={handleSubmit(handleLogin)} className="space-y-5 ">
-          <label>Email:</label>
-          <input
-            placeholder="Email "
-            type="email"
-            {...register("email", { required: true })}
-          />
-          {errors.email && errors.email.message && (
-            <p className="text-red-500">{errors.email.message}</p>
-          )}
-
-          <label>Password:</label>
-          <input
-            placeholder="Password"
-            type="password"
-            {...register("password", { required: true })}
-          />
-          {errors.password && errors.password.message && (
-            <p className="text-red-500">{errors.password.message}</p>
-          )}
-          <Button
-            className="ui button !block"
-            disabled={isSubmitting}
-            type="submit"
-          >
-            Login
-          </Button>
-          <div>
-            <Link to={"/register"}>Don't have an account ? Register</Link>
-          </div>
-        </Form>
-      </div> */}
+      <Helmet>
+        <title>Login Page</title>
+      </Helmet>
       <div className="bg-white py-6 sm:py-8 lg:py-12">
         <div className="mx-auto max-w-screen-2xl px-4 md:px-8">
           <h2 className="mb-4 text-center text-2xl font-bold text-gray-800 md:mb-8 lg:text-3xl">
@@ -103,6 +84,7 @@ const Login = () => {
                   Password
                 </label>
                 <input
+                  type="password"
                   className="w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring"
                   {...register("password", { required: true })}
                 />
@@ -112,6 +94,7 @@ const Login = () => {
               </div>
 
               <button
+                type="submit"
                 disabled={isSubmitting}
                 className="block rounded-lg bg-gray-800 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-gray-300 transition duration-100 hover:bg-gray-700 focus-visible:ring active:bg-gray-600 md:text-base"
               >

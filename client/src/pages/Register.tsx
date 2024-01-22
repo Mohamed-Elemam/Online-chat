@@ -3,8 +3,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
-export const Register = () => {
+const Register = () => {
   const navigate = useNavigate();
 
   const inputSchema = z.object({
@@ -25,6 +27,7 @@ export const Register = () => {
     resolver,
   });
 
+  const { setUserState } = useContext(AuthContext);
   const handleRegister: SubmitHandler<inputsType> = async (values) => {
     console.log(values);
     try {
@@ -32,8 +35,17 @@ export const Register = () => {
         "http://localhost:3000/user/register",
         values
       );
-      console.log(data);
-      localStorage.setItem("userToken", data.token);
+      if (setUserState) {
+        const userData = {
+          username: data.user.username,
+          userId: data.user._id,
+          email: data.user.email,
+
+          token: data.token,
+        };
+        setUserState(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
+      }
       navigate("/chat");
     } catch (error) {
       console.error(error);
@@ -152,3 +164,5 @@ export const Register = () => {
     </>
   );
 };
+
+export default Register;

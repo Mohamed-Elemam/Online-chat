@@ -3,7 +3,6 @@ import { UserModel } from "./../../../database/models/user.model.js";
 import { io } from "./../../../server.js";
 
 export const sendMessage = async (req, res) => {
-  console.log(req.user);
   const { message, destId } = req.body;
   const destUser = await UserModel.findById(destId);
   if (!destUser) {

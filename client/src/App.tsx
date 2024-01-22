@@ -1,18 +1,27 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "./Layout";
-import { Register } from "./Register";
-import Login from "./Login";
-import { Chat } from "./Chat";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import { Chat } from "./pages/Chat";
+import NotFound from "./NotFound";
+import { useContext } from "react";
+import { AuthContext } from "./context/AuthContext";
 
 export default function App() {
+  const { token } = useContext(AuthContext);
+
   const router = createBrowserRouter([
     {
       path: "/",
       element: <Layout />,
       children: [
-        { path: "/register", element: <Register /> },
-        { path: "/login", element: <Login /> },
-        { path: "/chat", element: <Chat /> },
+        { path: "/register", element: token ? <Chat /> : <Register /> },
+        { path: "/login", element: token ? <Chat /> : <Login /> },
+        {
+          path: "/chat",
+          element: token ? <Chat /> : <Login />,
+        },
+        { path: "*", element: <NotFound /> },
       ],
     },
   ]);
