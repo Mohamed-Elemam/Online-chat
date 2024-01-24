@@ -1,9 +1,10 @@
+import moment from "moment/moment.js";
 import { ChatModel } from "./../../../database/models/chat.model.js";
 import { UserModel } from "./../../../database/models/user.model.js";
 import { io } from "./../../../server.js";
 
 export const sendMessage = async (req, res) => {
-  const { message, destId } = req.body;
+  const { message, destId, socketId } = req.body;
   const destUser = await UserModel.findById(destId);
   if (!destUser) {
     res.status(404).json({ message: "In-valid user" });
@@ -24,18 +25,20 @@ export const sendMessage = async (req, res) => {
         from: req.user._id,
         to: destId,
         message: message,
+        time: moment().format("LT"),
       },
     });
-    io.to(destUser.socketId).emit("receiveMessage", message);
+    io.to(socketId).emit("sendMessage", chat.messages.message);
     return res.status(201).json({ status: "Done", message: chat });
   }
   chat.messages.push({
     from: req.user._id,
     to: destId,
     message: message,
+    time: moment().format("LT"),
   });
   await chat.save();
-  io.to(destUser.socketId).emit("receiveMessage", message);
+  io.to(socketId).emit("sendMessage", chat.messages.message);
 
   return res.status(200).json({ status: "Done", message: chat });
 };

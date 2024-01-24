@@ -1,91 +1,92 @@
-import axios from "axios";
 import { useContext, useEffect, useState } from "react";
-import { Image } from "semantic-ui-react";
 import MessagesArea from "./MessagesArea";
 import { AuthContext } from "../context/AuthContext";
 import { ChatContext, OnlineUsersProps } from "../context/ChatContext";
 
 export interface User {
-  userId: string | null;
-  username: string | null;
-  // online: boolean;
+  userId?: string | null;
+  username?: string | null;
+  socketId?: string | null;
 }
-export interface Chat {
+export interface ChatMessagesProps {
   from: string;
   message: string;
   to: string;
   _id: string;
+  time: string;
 }
+
 const UsersSideBar = () => {
-  const { token, username, userId } = useContext(AuthContext);
-  const { userSocket, onlineUsers } = useContext(ChatContext);
+  const { userId } = useContext(AuthContext);
+  const { onlineUsers, userSocket, chatMessages, getMessages } =
+    useContext(ChatContext);
 
   const [destUser, setDestUser] = useState<User>();
-  const [chatMessages, setChatMessages] = useState<Chat[]>([]);
 
-  const filteredOnlineUser: OnlineUsersProps[] | null = onlineUsers?.filter(
+  const filteredOnlineUser: OnlineUsersProps[] = onlineUsers?.filter(
     (user) => user.userId !== userId
   );
-  async function getMessages(receiverId) {
-    console.log(receiverId);
-    try {
-      const { data } = await axios.get(
-        `http://localhost:3000/chat/${receiverId}`,
 
-        {
-          headers: {
-            Authorization: `${import.meta.env.VITE_TOKEN_SECRET} ${token}`,
-          },
-        }
-      );
-      console.log(data);
-      setChatMessages(data.chat);
-    } catch (error) {
-      console.log(error.response.data.message);
-      if (error.response.data.message === "Chat not found") {
-        setChatMessages([]);
-      }
+  useEffect(() => {
+    if (userSocket) {
+      userSocket.on("receiveMessage", () => {
+        getMessages!(destUser?.userId);
+      });
     }
-  }
-  // useEffect(() => {
-  //   userSocket?.on("receiveMessage", getMessages());
-  // }, [userSocket]);
+
+    // Clean up the listener when the component unmounts
+    return () => {
+      if (userSocket) {
+        userSocket.off("receiveMessage");
+      }
+    };
+  }, [userSocket]);
 
   return (
-    <>
-      <h3 className="text-xl font-medium">
-        Online Users ({onlineUsers?.length})
-      </h3>
-      <div className="overflow-y-scroll min-w-[250px] border border-purple-700 p-3 rounded-lg h-[60vh] sm:h-[80%]">
-        <div>
-          {filteredOnlineUser?.map((user) => (
-            <div
-              key={user.userId}
-              className="flex py-4 hover:bg-red-50 hover:cursor-pointer border-b border-gray-200"
-              onClick={() => {
-                if (user) {
-                  setDestUser({ userId: user.userId, username: user.username });
-                  getMessages(user?.userId);
-                }
-              }}
-            >
-              <span className="relative inline-block">
-                <img
-                  src="https://react.semantic-ui.com/images/avatar/small/elliot.jpg"
-                  className="w-[40px] rounded-full"
-                />
-                {user.socketId && (
-                  <span className="absolute right-[-15%] top-[-15%] h-[20px] w-[20px] rounded-full border-[3px] border-solid border-white bg-green-500"></span>
-                )}
-              </span>
+    <div className="grid grid-cols-2">
+      <div>
+        <h3 className="text-xl font-medium">
+          Online Users ({onlineUsers?.length})
+        </h3>
+        <div className="w-50 overflow-y-scroll min-w-[250px] border border-purple-700 p-3 rounded-lg h-[60vh] sm:h-[80%]">
+          <div>
+            {filteredOnlineUser?.map((user) => (
+              <div
+                key={user.userId}
+                className="flex py-4 hover:bg-red-50 hover:cursor-pointer border-b border-gray-200"
+                onClick={() => {
+                  if (user) {
+                    setDestUser({
+                      userId: user.userId,
+                      username: user.username,
+                      socketId: user.socketId,
+                    });
+                    getMessages!(user?.userId);
+                  }
+                }}
+              >
+                <span className="relative inline-block">
+                  {/* <img
+                    src="https://react.semantic-ui.com/images/avatar/small/elliot.jpg"
+                    className="w-[40px] rounded-full"
+                  /> */}
+                  <div className="inline-block h-[40px] w-[40px] rounded-full bg-teal-500 p-2 font-medium uppercase text-white shadow-md text-center">
+                    {user.username?.charAt(0)}
+                  </div>
 
-              <div className="ml-3">{user.username}</div>
-            </div>
-          ))}
+                  {user.socketId && (
+                    <span className="absolute right-[-15%] top-[-15%] h-[20px] w-[20px] rounded-full border-[3px] border-solid border-white bg-green-500"></span>
+                  )}
+                </span>
+
+                <div className="ml-3">{user.username}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       <MessagesArea destUser={destUser} chatMessages={chatMessages} />
-    </>
+    </div>
   );
 };
 

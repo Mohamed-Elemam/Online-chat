@@ -1,9 +1,15 @@
-import { User } from "./UsersSideBar";
+import { ChatMessagesProps, User } from "./UsersSideBar";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import ChatInput from "./ChatInput";
 
-const MessagesArea = ({ destUser, chatMessages }: { destUser: User }) => {
+const MessagesArea = ({
+  destUser,
+  chatMessages,
+}: {
+  destUser: User;
+  chatMessages: ChatMessagesProps[];
+}) => {
   const { username, userId } = useContext(AuthContext);
 
   if (destUser === undefined) {
@@ -12,11 +18,11 @@ const MessagesArea = ({ destUser, chatMessages }: { destUser: User }) => {
 
   return (
     <div className="flex flex-col w-[100%] rounded-md bg-[#74EBD5] bg-[linear-gradient(90deg,#74EBD5_0%,#9FACE6_100%)]">
-      <div className="p-3 font-medium text-white text-md   bg-[#00000039]">
+      <div className="p-3 font-medium text-white text-md bg-[#00000039]">
         {destUser.username}
       </div>
 
-      <div className="min-h-[70%]  flex flex-col overflow-y-scroll">
+      <div className="  flex flex-col overflow-y-scroll">
         {chatMessages?.length > 0 ? (
           chatMessages?.map((ele) => (
             <div
@@ -30,7 +36,7 @@ const MessagesArea = ({ destUser, chatMessages }: { destUser: User }) => {
               </div>
               <div className="text-black mb-2">{ele.message} </div>
               <div className="absolute bottom-1 right-1 text-xs text-gray-500">
-                10:30 AM
+                {ele.time}
               </div>
             </div>
           ))
@@ -40,10 +46,9 @@ const MessagesArea = ({ destUser, chatMessages }: { destUser: User }) => {
             <p>Send a message below</p>
           </div>
         )}
-        {/* ************************ */}
-        <div className="bg-[#00000012]">
-          <ChatInput destUser={destUser} />
-        </div>
+      </div>
+      <div className="bg-[#00000012]">
+        <ChatInput destUser={destUser} />
       </div>
     </div>
   );

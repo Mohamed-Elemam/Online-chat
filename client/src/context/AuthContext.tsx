@@ -5,6 +5,7 @@ export type User = {
   username: string | null;
   email: string | null;
 };
+
 export type AuthContent = {
   token: string | null;
   userId: string | null;

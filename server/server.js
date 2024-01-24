@@ -35,4 +35,12 @@ io.on("connection", (socket) => {
     onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
     io.emit("getOnlineUsers", onlineUsers);
   });
+
+  socket.on("sendMessage", (message, socketId) => {
+    io.to(socketId).emit(message);
+  });
+
+  socket.on("chatMessageXD", (message) => {
+    console.log(message);
+  });
 });

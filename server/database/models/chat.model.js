@@ -25,6 +25,7 @@ const chatSchema = new Schema(
           required: true,
         },
         message: { type: String, required: true },
+        time: { type: String },
       },
     ],
   },

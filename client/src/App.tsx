@@ -3,7 +3,7 @@ import Layout from "./Layout";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import { Chat } from "./pages/Chat";
-import NotFound from "./NotFound";
+import NotFound from "./pages/NotFound";
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
 

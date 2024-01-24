@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import InputEmoji from "react-input-emoji";
 import { AuthContext } from "../context/AuthContext";
 import { ChatContext } from "../context/ChatContext";
@@ -8,17 +8,34 @@ import { User } from "./UsersSideBar";
 export default function ChatInput({ destUser }: { destUser: User }) {
   const [text, setText] = useState("");
 
-  const { token, userId } = useContext(AuthContext);
-  const { userSocket } = useContext(ChatContext);
+  const { token } = useContext(AuthContext);
+  const { userSocket, getMessages, chatMessages, setChatMessages } =
+    useContext(ChatContext);
+
+  // const [messages, setMessages] = useState([]);
+
+  // useEffect(() => {
+  //   userSocket?.on("sendMessage", (messageData) => {
+  // setMessages((prevMessages) => [...prevMessages, messageData]);
+  //     setChatMessages([...chatMessages, messageData]);
+  //     console.log(11111111);
+  //   });
+  // return () => {
+  //   userSocket?.off("sendMessage");
+  // };
+  // }, []);
+  useEffect(() => {
+    console.log("chatMessages updated:", chatMessages);
+  }, [chatMessages]);
 
   async function sendMessage(destUser: User, message: string) {
     try {
-      console.log(message, "\n", destUser.userId);
       const { data } = await axios.post(
         "http://localhost:3000/chat",
         {
-          destId: destUser.userId,
           message,
+          destId: destUser.userId,
+          socketId: destUser.socketId,
         },
         {
           headers: {
@@ -26,11 +43,12 @@ export default function ChatInput({ destUser }: { destUser: User }) {
           },
         }
       );
-      console.log(message, "\n", data, "\n", destUser.userId);
+      // console.log("sended message: ", data.message.messages?.at(-1));
 
-      userSocket?.emit("chatMessage", {
-        to: destUser.userId,
-        message,
+      console.log("chat message before update: ", chatMessages);
+
+      userSocket?.emit("chatMessageXD", {
+        message: data.message.messages?.at(-1),
       });
     } catch (error) {
       console.error("Error sending message:", error);
@@ -38,6 +56,7 @@ export default function ChatInput({ destUser }: { destUser: User }) {
   }
 
   function handleOnEnter(text: string) {
+    if (text.length === 0) return;
     sendMessage(destUser, text);
     setText("");
   }
@@ -52,7 +71,7 @@ export default function ChatInput({ destUser }: { destUser: User }) {
         placeholder="Type a message"
       />
       <button
-        className="bg-[#4CAF50] text-[white] rounded cursor-pointer px-4 py-2 border-[none]"
+        className="bg-[#4CAF50] rounded-full text-[white] cursor-pointer px-4 py-2 border-[none]"
         onClick={() => {
           handleOnEnter(text);
         }}
