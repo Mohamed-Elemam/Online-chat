@@ -38,11 +38,15 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log({ email, password });
 
     const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
     const unHashedPassword = bcrypt.compareSync(password, user.password);
 
-    if (!user || !unHashedPassword) {
+    if (!unHashedPassword) {
       return res.status(401).json({ error: "Invalid username or password" });
     }
     user.online = true;

@@ -6,21 +6,22 @@ import {
   useState,
 } from "react";
 import { Socket, io } from "socket.io-client";
-import { AuthContext, User } from "./AuthContext";
+import { AuthContext } from "./AuthContext";
 import axios from "axios";
 import { ChatMessagesProps } from "../components/UsersSideBar";
 
 export interface OnlineUsersProps {
-  socketId: string | null;
-  userId: string | null;
-  username: string | null;
+  socketId: string;
+  userId: string;
+  username: string;
+  email?: string;
 }
 interface ChatContextProps {
   userSocket: Socket | null;
   onlineUsers: OnlineUsersProps[] | null;
   setChatMessages: (messages: ChatMessagesProps[]) => void;
   chatMessages: ChatMessagesProps[] | [];
-  getMessages?: (receiverId: User) => Promise<void>;
+  getMessages?: (recipientUser: string) => Promise<void>;
 }
 export const ChatContext = createContext<ChatContextProps>({
   userSocket: null,
@@ -59,56 +60,31 @@ const ChatContextProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [userSocket, userId, username]);
 
-  // useEffect(() => {
-  //   if (userSocket === null) return;
-  //   userSocket.emit("sendMessage",{...newMessage ,destUser.userId});
-
-  //   return () => {
-  //     userSocket.off("getOnlineUsers");
-  //   };
-  // }, [newMessage]);
-
-  // useEffect(() => {
-  //   if (userSocket === null) return;
-  //   userSocket.on("sendMessage",(message)=>{
-  // push
-  //   });
-
-  //   return () => {
-  //     userSocket.off("getOnlineUsers");
-  //   };
-  // }, [newMessage]);
-
-  // useEffect(() => {
-  //   if (userSocket === null) return;
-  //   userSocket.on("sendMessage12", (messages) => {
-  //     console.log("Message received:", messages);
-  //     setChatMessages(messages);
-  //   });
-
-  //   return () => {
-  //     userSocket.off("sendMessage12");
-  //   };
-  // }, [userSocket, setChatMessages]);
   useEffect(() => {
-    console.log("Setting up event listener for chatMessageXD");
-
-    userSocket?.on("chatMessageXD", (message) => {
-      console.log("Received chat message:", message);
-      setChatMessages((prevMessages) => [...prevMessages, message]);
+    if (userSocket === null) return;
+    userSocket.on("getChatMessages", (res) => {
+      setChatMessages(res);
     });
-
     return () => {
-      console.log("Cleaning up event listener for chatMessageXD");
-      userSocket?.off("chatMessageXD");
+      userSocket.off("getChatMessages");
     };
   }, [userSocket]);
 
-  async function getMessages(receiverId: User) {
-    console.log(receiverId);
+  useEffect(() => {
+    if (userSocket === null) return;
+    userSocket.on("addLastMessage", (message: []) => {
+      setChatMessages(message);
+    });
+
+    return () => {
+      userSocket.off("addLastMessage");
+    };
+  }, [userSocket]);
+
+  async function getMessages(recipientUserId: string) {
     try {
       const { data } = await axios.get(
-        `http://localhost:3000/chat/${receiverId}`,
+        `http://localhost:3000/chat/${recipientUserId}`,
 
         {
           headers: {
@@ -116,10 +92,8 @@ const ChatContextProvider = ({ children }: { children: ReactNode }) => {
           },
         }
       );
-      console.log(data);
-      return setChatMessages(data.chat);
+      userSocket?.emit("getChatMessages", data.chat);
     } catch (error: unknown) {
-      axios.isAxiosError(error) && console.log(error.response?.data.message);
       if (
         axios.isAxiosError(error) &&
         error.response?.data.message === "Chat not found"

@@ -1,9 +1,9 @@
 import React, { ReactNode, createContext, useEffect, useState } from "react";
 
 export type User = {
-  userId: string | null;
-  username: string | null;
-  email: string | null;
+  userId: string;
+  username: string;
+  email: string;
 };
 
 export type AuthContent = {

@@ -16,7 +16,7 @@ export default function App() {
       element: <Layout />,
       children: [
         { path: "/register", element: token ? <Chat /> : <Register /> },
-        { path: "/login", element: token ? <Chat /> : <Login /> },
+        { path: "/", element: token ? <Chat /> : <Login /> },
         {
           path: "/chat",
           element: token ? <Chat /> : <Login />,
