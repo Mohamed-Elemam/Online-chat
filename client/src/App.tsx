@@ -6,6 +6,7 @@ import { Chat } from "./pages/Chat";
 import NotFound from "./pages/NotFound";
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
+import ProtectedRoute from "./utils/ProtectedRoutes";
 
 export default function App() {
   const { token } = useContext(AuthContext);
@@ -19,7 +20,11 @@ export default function App() {
         { path: "/", element: token ? <Chat /> : <Login /> },
         {
           path: "/chat",
-          element: token ? <Chat /> : <Login />,
+          element: (
+            <ProtectedRoute>
+              <Chat />
+            </ProtectedRoute>
+          ),
         },
         { path: "*", element: <NotFound /> },
       ],

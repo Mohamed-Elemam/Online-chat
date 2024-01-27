@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ChatContext, OnlineUsersProps } from "../context/ChatContext";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export const useSendMessage = ({
   destUser,
@@ -13,6 +14,7 @@ export const useSendMessage = ({
   const [text, setText] = useState("");
 
   async function sendMessage(destUser: OnlineUsersProps, message: string) {
+    console.log(destUser.userId, destUser.socketId, message);
     try {
       const { data } = await axios.post(
         "http://localhost:3000/chat",
@@ -28,8 +30,9 @@ export const useSendMessage = ({
         }
       );
       userSocket?.emit("addLastMessage", data.message.messages?.at(-1));
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error sending message:", error);
+      axios.isAxiosError(error) && toast.error(error.response?.data.message);
     }
   }
 

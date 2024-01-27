@@ -11,7 +11,7 @@ export default function ChatInput({
   const { text, setText, handleOnEnter } = useSendMessage({ destUser });
   console.log(destUser);
   return (
-    <div className="flex gap-3 p-2">
+    <div className="flex gap-3 p-2  items-center">
       <InputEmoji
         value={text}
         onChange={setText}
@@ -20,7 +20,7 @@ export default function ChatInput({
         placeholder="Type a message"
       />
       <button
-        className="bg-[#58ce5c] rounded-full w-10 h-10 text-[white] cursor-pointer px-4 py-2 border-[none]"
+        className="bg-[#0288d1] rounded-full text-2xl w-10 h-10 text-white cursor-pointer flex justify-center items-center border-[none] "
         onClick={() => {
           handleOnEnter(text);
         }}

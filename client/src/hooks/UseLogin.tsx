@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 const inputSchema = z.object({
   email: z.string().email("enter valid email").trim(),
-  password: z.string().min(6, "name must be more than 5 characters").trim(),
+  password: z.string().min(6, "password must be more than 5 characters").trim(),
 });
 
 type inputsType = z.infer<typeof inputSchema>;
@@ -49,6 +49,21 @@ export const useLogin = () => {
     [setUserState, navigate]
   );
 
+  const handleDemoLogin1 = () => {
+    const loginData = {
+      email: import.meta.env.VITE_DEMO_EMAIL1,
+      password: import.meta.env.VITE_DEMO_PASSWORD1,
+    };
+    handleLogin(loginData);
+  };
+  const handleDemoLogin2 = () => {
+    const loginData = {
+      email: import.meta.env.VITE_DEMO_EMAIL2,
+      password: import.meta.env.VITE_DEMO_PASSWORD2,
+    };
+    handleLogin(loginData);
+  };
+
   const {
     handleSubmit,
     register,
@@ -58,5 +73,13 @@ export const useLogin = () => {
     resolver,
   });
 
-  return { handleSubmit, register, errors, isSubmitting, handleLogin };
+  return {
+    handleSubmit,
+    register,
+    errors,
+    isSubmitting,
+    handleLogin,
+    handleDemoLogin1,
+    handleDemoLogin2,
+  };
 };

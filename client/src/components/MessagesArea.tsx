@@ -19,11 +19,11 @@ const MessagesArea = ({
 
   return (
     <div className="flex flex-col w-[100%]  bg-[#74EBD5] bg-[linear-gradient(90deg,#74EBD5_0%,#9FACE6_100%)]">
-      <div className="p-3 font-medium text-white text-md bg-[#00000039]">
+      <div className="p-3 font-semibold capitalize text-white text-md bg-[#00000039] ">
         {destUser.username}
       </div>
 
-      <div className="  flex flex-col overflow-y-scroll h-[75dvh]">
+      <div className="  flex flex-col overflow-y-scroll h-[75dvh] ">
         {chatMessages?.length > 0 ? (
           chatMessages?.map((ele) => (
             <div

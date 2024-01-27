@@ -4,8 +4,15 @@ import { ToastContainer } from "react-toastify";
 import { useLogin } from "../hooks/UseLogin";
 
 const Login = () => {
-  const { handleSubmit, register, errors, isSubmitting, handleLogin } =
-    useLogin();
+  const {
+    handleSubmit,
+    register,
+    errors,
+    isSubmitting,
+    handleLogin,
+    handleDemoLogin1,
+    handleDemoLogin2,
+  } = useLogin();
 
   return (
     <>
@@ -54,7 +61,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="block rounded-lg bg-gray-800 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-gray-300 transition duration-100 hover:bg-gray-700 focus-visible:ring active:bg-gray-600 md:text-base"
+                className="block rounded-lg bg-[#0288d1] px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-gray-300 transition duration-100 hover:bg-[#3c98ca] focus-visible:ring active:bg-[#30779d] md:text-base"
               >
                 Log in
               </button>
@@ -64,18 +71,19 @@ const Login = () => {
                   Log in with demo account
                 </span>
               </div>
-              <button
-                disabled={isSubmitting}
-                className="block rounded-lg bg-gray-800 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-gray-300 transition duration-100 hover:bg-gray-700 focus-visible:ring active:bg-gray-600 md:text-base"
+
+              <div
+                onClick={handleDemoLogin1}
+                className="block cursor-pointer rounded-lg bg-[#fff] text-[#0288d1] px-8 py-3 text-center text-sm font-semibold  border border-[#0288d1] ring-[#3c98ca] transition duration-100 hover:bg-[#f6fafe] focus-visible:ring active:bg-[#f6fafe] md:text-base"
               >
                 Login with Demo account no.1
-              </button>
-              <button
-                disabled={isSubmitting}
-                className="block rounded-lg bg-gray-800 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-gray-300 transition duration-100 hover:bg-gray-700 focus-visible:ring active:bg-gray-600 md:text-base"
+              </div>
+              <div
+                onClick={handleDemoLogin2}
+                className="block cursor-pointer rounded-lg bg-[#fff] text-[#0288d1] px-8 py-3 text-center text-sm font-semibold  border border-[#0288d1] ring-[#3c98ca] transition duration-100 hover:bg-[#f6fafe] focus-visible:ring active:bg-[#f6fafe] md:text-base"
               >
                 Login with Demo account no.2
-              </button>
+              </div>
             </div>
 
             <div className="flex items-center justify-center bg-gray-100 p-4">
