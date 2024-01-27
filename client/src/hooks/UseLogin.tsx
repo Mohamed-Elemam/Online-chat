@@ -25,7 +25,7 @@ export const useLogin = () => {
     async (values) => {
       try {
         const { data } = await axios.post(
-          `${import.meta.env.VITE_LIVE_API_URL}/user/login`,
+          import.meta.env.VITE_LIVE_API_URL + "/user/login",
           values
         );
 

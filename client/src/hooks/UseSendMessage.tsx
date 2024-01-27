@@ -16,7 +16,7 @@ export const useSendMessage = ({
   async function sendMessage(destUser: OnlineUsersProps, message: string) {
     try {
       const { data } = await axios.post(
-        `${import.meta.env.VITE_LIVE_API_URL}/chat`,
+        import.meta.env.VITE_LIVE_API_URL + "/chat",
         {
           message,
           destId: destUser.userId,

@@ -21,7 +21,7 @@ const server = app.listen(port, () =>
 
 export const io = new Server(server, {
   cors: {
-    origin: "https://online-chat-server.vercel.app",
+    origin: "*",
   },
 });
 let onlineUsers = [];

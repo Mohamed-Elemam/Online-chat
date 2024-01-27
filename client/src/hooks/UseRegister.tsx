@@ -36,7 +36,7 @@ export const useRegister = () => {
   const handleRegister: SubmitHandler<inputsType> = async (values) => {
     try {
       const { data } = await axios.post(
-        `${import.meta.env.VITE_LIVE_API_URL}/user/register`,
+        import.meta.env.VITE_LIVE_API_URL + "/user/register",
         values
       );
       if (setUserState) {

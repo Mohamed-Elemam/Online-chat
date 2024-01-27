@@ -39,7 +39,7 @@ const ChatContextProvider = ({ children }: { children: ReactNode }) => {
   );
 
   useEffect(() => {
-    const socket = io(`${import.meta.env.VITE_LIVE_API_URL}`);
+    const socket = io(import.meta.env.VITE_LIVE_API_URL);
     userId &&
       socket.on("connect", () => {
         setUserSocket(socket);
@@ -84,7 +84,7 @@ const ChatContextProvider = ({ children }: { children: ReactNode }) => {
   async function getMessages(recipientUserId: string) {
     try {
       const { data } = await axios.get(
-        `${import.meta.env.VITE_LIVE_API_URL}/chat/${recipientUserId}`,
+        import.meta.env.VITE_LIVE_API_URL + `/chat/${recipientUserId}`,
 
         {
           headers: {
