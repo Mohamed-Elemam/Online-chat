@@ -36,7 +36,7 @@ export const useRegister = () => {
   const handleRegister: SubmitHandler<inputsType> = async (values) => {
     try {
       const { data } = await axios.post(
-        "http://localhost:3000/user/register",
+        `${import.meta.env.VITE_LIVE_API_URL}/user/register`,
         values
       );
       if (setUserState) {
@@ -44,7 +44,6 @@ export const useRegister = () => {
           username: data.user.username,
           userId: data.user._id,
           email: data.user.email,
-
           token: data.token,
         };
         setUserState(userData);

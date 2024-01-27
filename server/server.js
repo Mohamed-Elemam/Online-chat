@@ -19,7 +19,11 @@ const server = app.listen(port, () =>
   console.log(`Server listening on port ${port}!`)
 );
 
-export const io = new Server(server, { cors: "*" });
+export const io = new Server(server, {
+  cors: {
+    origin: "https://online-chat-server.vercel.app",
+  },
+});
 let onlineUsers = [];
 let currentChat = [];
 io.on("connection", (socket) => {

@@ -14,10 +14,9 @@ export const useSendMessage = ({
   const [text, setText] = useState("");
 
   async function sendMessage(destUser: OnlineUsersProps, message: string) {
-    console.log(destUser.userId, destUser.socketId, message);
     try {
       const { data } = await axios.post(
-        "http://localhost:3000/chat",
+        `${import.meta.env.VITE_LIVE_API_URL}/chat`,
         {
           message,
           destId: destUser.userId,

@@ -32,7 +32,6 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     const user = localStorage.getItem("user");
     if (user) {
       setUserState(JSON.parse(user));
-      // console.log(JSON.parse(user));
     }
   }, []);
 
