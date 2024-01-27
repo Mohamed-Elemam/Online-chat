@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from "react";
 import MessagesArea from "./MessagesArea";
 import { AuthContext } from "../context/AuthContext";
 import { ChatContext, OnlineUsersProps } from "../context/ChatContext";
-import { BiMenuAltRight } from "react-icons/bi";
 import { RiMenu2Line } from "react-icons/ri";
 import { RiCloseLine } from "react-icons/ri";
 export interface ChatMessagesProps {
