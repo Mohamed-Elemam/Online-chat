@@ -54,9 +54,4 @@ io.on("connection", (socket) => {
     console.log("chatMessages with last message: ", currentChat);
     io.emit("addLastMessage", currentChat);
   });
-  socket.on("connect_error", (err) => {
-    console.log(err.message);
-    console.log(err.description);
-    console.log(err.context);
-  });
 });
