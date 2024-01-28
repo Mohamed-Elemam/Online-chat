@@ -22,7 +22,7 @@ const server = app.listen(port, () =>
 export const io = new Server(server, {
   cors: {
     origin: ["http://localhost:5173", "https://online-chat-mauve.vercel.app/"],
-
+    allowedHeaders: ["Authorization"],
     credentials: true,
   },
   allowEIO3: true,
@@ -42,7 +42,7 @@ io.on("connection", (socket) => {
     onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
     io.emit("getOnlineUsers", onlineUsers);
   });
-  //?####------------------------------------------
+  //####------------------------------------------
   socket.on("getChatMessages", (chat) => {
     currentChat = [];
     currentChat.push(...chat);
@@ -55,13 +55,4 @@ io.on("connection", (socket) => {
     console.log("chatMessages with last message: ", currentChat);
     io.emit("addLastMessage", currentChat);
   });
-
-  //------------------------------------------
-  // socket.on("sendMessage", (message, socketId) => {
-  //   io.to(socketId).emit(message);
-  // });
-
-  // socket.on("chatMessageXD", (message) => {
-  //   console.log(message);
-  // });
 });
