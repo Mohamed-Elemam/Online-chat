@@ -13,11 +13,10 @@ export default function App() {
 
   const router = createBrowserRouter([
     {
-      path: "/",
       element: <Layout />,
       children: [
-        { path: "/register", element: token ? <Chat /> : <Register /> },
         { path: "/", element: token ? <Chat /> : <Login /> },
+        { path: "/register", element: token ? <Chat /> : <Register /> },
         {
           path: "/chat",
           element: (
