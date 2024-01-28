@@ -1,7 +1,7 @@
 import moment from "moment/moment.js";
 import { ChatModel } from "./../../../database/models/chat.model.js";
 import { UserModel } from "./../../../database/models/user.model.js";
-import io from "./../../../server.js";
+import { io } from "./../../../server.js";
 
 export const sendMessage = async (req, res) => {
   const { message, destId, socketId } = req.body;
