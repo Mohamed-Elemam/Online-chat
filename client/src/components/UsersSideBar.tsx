@@ -62,7 +62,6 @@ const UsersSideBar = () => {
       </div>
       <div className="flex mx-3 gap-2 relative">
         <div>
-          {width}
           <div
             className={`w-[${width}px]  h-[85dvh]  overflow-hidden transition-all duration-300 ease-in-out z-10  border border-[#3381ab]`}
           >

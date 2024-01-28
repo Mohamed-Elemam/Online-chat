@@ -25,7 +25,7 @@ export const io = new Server(server, {
     methods: ["GET", "POST"],
     credentials: true,
   },
-  allowEIO3: true,
+  // allowEIO3: true,
 });
 let onlineUsers = [];
 let currentChat = [];
@@ -35,7 +35,7 @@ io.on("connection", (socket) => {
   socket.on("addNewUser", (userId, username) => {
     !onlineUsers.some((user) => user.userId === userId) &&
       onlineUsers.push({ userId, socketId: socket.id, username });
-    console.log("onlineUsers", onlineUsers);
+    // console.log("onlineUsers", onlineUsers);
     io.emit("getOnlineUsers", onlineUsers);
   });
   socket.on("disconnect", () => {
@@ -45,13 +45,13 @@ io.on("connection", (socket) => {
   socket.on("getChatMessages", (chat) => {
     currentChat = [];
     currentChat.push(...chat);
-    console.log("chatMessages", currentChat);
-    console.log(currentChat?.length);
+    // console.log("chatMessages", currentChat);
+    // console.log(currentChat?.length);
     io.emit("getChatMessages", currentChat);
   });
   socket.on("addLastMessage", (LastMessage) => {
     currentChat.push(LastMessage);
-    console.log("chatMessages with last message: ", currentChat);
+    // console.log("chatMessages with last message: ", currentChat);
     io.emit("addLastMessage", currentChat);
   });
 });

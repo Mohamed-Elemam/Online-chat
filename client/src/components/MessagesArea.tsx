@@ -18,26 +18,26 @@ const MessagesArea = ({
   }
 
   return (
-    <div className="flex flex-col w-[100%]  bg-[#74EBD5] bg-[linear-gradient(90deg,#74EBD5_0%,#9FACE6_100%)]">
+    <div className="flex flex-col w-[100%] justify-between  bg-[#74EBD5] bg-[linear-gradient(90deg,#74EBD5_0%,#9FACE6_100%)]">
       <div className="p-3 font-semibold capitalize text-white text-md bg-[#00000039] ">
         {destUser.username}
       </div>
 
-      <div className="  flex flex-col overflow-y-scroll h-[75dvh] ">
+      <div className="  flex flex-col overflow-y-scroll h-[65dvh] ">
         {chatMessages?.length > 0 ? (
           chatMessages?.map((ele) => (
             <div
-              key={ele._id}
+              key={ele?._id}
               className={` p-3 border border-solid border-gray-300 mx-4 my-4  bg-white max-w-[300px] rounded-lg relative w-[100%] ${
-                ele.from == userId ? "ml-auto " : ""
+                ele?.from == userId ? "ml-auto " : ""
               }`}
             >
               <div className="font-bold mb-1 text-sm text-green-600">
-                {ele.from === userId ? "You" : destUser.username}
+                {ele?.from === userId ? "You" : destUser.username}
               </div>
-              <div className="text-black mb-2">{ele.message} </div>
+              <div className="text-black mb-2">{ele?.message} </div>
               <div className="absolute bottom-1 right-1 text-xs text-gray-500">
-                {ele.time}
+                {ele?.time}
               </div>
             </div>
           ))

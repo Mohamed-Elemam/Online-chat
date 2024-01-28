@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import image from "../../public/chat.svg";
+import image from "/chat.svg";
 import { AuthContext } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 const Navbar = () => {
