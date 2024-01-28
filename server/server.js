@@ -23,7 +23,6 @@ export const io = new Server(server, {
   cors: {
     origin: "https://online-chat-mauve.vercel.app",
     methods: ["GET", "POST"],
-    // allowedHeaders: ["Authorization"],
     credentials: true,
   },
   allowEIO3: true,
@@ -43,7 +42,6 @@ io.on("connection", (socket) => {
     onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
     io.emit("getOnlineUsers", onlineUsers);
   });
-  //####------------------------------------------
   socket.on("getChatMessages", (chat) => {
     currentChat = [];
     currentChat.push(...chat);
@@ -56,15 +54,9 @@ io.on("connection", (socket) => {
     console.log("chatMessages with last message: ", currentChat);
     io.emit("addLastMessage", currentChat);
   });
-});
-
-socket.on("connect_error", (err) => {
-  // the reason of the error, for example "xhr poll error"
-  console.log(err.message);
-
-  // some additional description, for example the status code of the initial HTTP response
-  console.log(err.description);
-
-  // some additional context, for example the XMLHttpRequest object
-  console.log(err.context);
+  socket.on("connect_error", (err) => {
+    console.log(err.message);
+    console.log(err.description);
+    console.log(err.context);
+  });
 });

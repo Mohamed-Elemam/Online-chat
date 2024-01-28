@@ -39,7 +39,9 @@ const ChatContextProvider = ({ children }: { children: ReactNode }) => {
   );
 
   useEffect(() => {
-    const socket = io(import.meta.env.VITE_LIVE_API_URL);
+    const socket = io(import.meta.env.VITE_LIVE_API_URL, {
+      transports: ["websocket"],
+    });
     userId &&
       socket.on("connect", () => {
         setUserSocket(socket);
