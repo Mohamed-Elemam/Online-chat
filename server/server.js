@@ -22,6 +22,7 @@ const server = app.listen(port, () =>
 export const io = new Server(server, {
   cors: {
     origin: ["http://localhost:5173", "https://online-chat-mauve.vercel.app/"],
+    methods: ["GET", "POST"],
     allowedHeaders: ["Authorization"],
     credentials: true,
   },
